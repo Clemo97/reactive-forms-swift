@@ -13,15 +13,45 @@ enum ValidationResult: Equatable {
     case checking
 }
 
+// MARK: - CustomStringConvertible for better console output
+extension ValidationResult: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .valid:
+            return "✅ VALID"
+        case .invalid(let message):
+            return "❌ INVALID: \(message)"
+        case .checking:
+            return "⏳ CHECKING..."
+        }
+    }
+}
+
 struct FormValidator {
     static func validateEmail(_ email: String) -> ValidationResult {
-        guard email.contains("@") else {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespaces)
+        
+        if trimmedEmail.isEmpty {
+            return .invalid("Email is required")
+        }
+        
+        guard trimmedEmail.contains("@") else {
             return .invalid("Email must contain @")
         }
+        
+        // Basic email format check
+        let emailParts = trimmedEmail.split(separator: "@")
+        guard emailParts.count == 2, 
+              !emailParts[0].isEmpty, 
+              !emailParts[1].isEmpty else {
+            return .invalid("Invalid email format")
+        }
+        
         return .valid
     }
 
     static func validateRequired(_ value: String, fieldName: String) -> ValidationResult {
-        value.trimmingCharacters(in: .whitespaces).isEmpty ? .invalid("\(fieldName) is required") : .valid
+        let trimmedValue = value.trimmingCharacters(in: .whitespaces)
+        return trimmedValue.isEmpty ? .invalid("\(fieldName) is required") : .valid
     }
 }

@@ -14,10 +14,20 @@ struct PassengerFormView: View {
     
     enum FormField {
         case fullName, email, username, seat
+        
+        var description: String {
+            switch self {
+            case .fullName: return "Full Name"
+            case .email: return "Email"
+            case .username: return "Username"
+            case .seat: return "Seat"
+            }
+        }
     }
     
     init(passenger: Passenger, context: ModelContext) {
         _viewModel = State(initialValue: PassengerFormViewModel(passenger: passenger, context: context))
+        print("🚀 [FORM] PassengerFormView initialized - reactive validation ready!")
     }
     
     var body: some View {
@@ -95,7 +105,13 @@ struct PassengerFormView: View {
             .navigationTitle("Check-in")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
+                print("👁️  [FORM] Form appeared - setting focus to Full Name field")
                 focusedField = .fullName
+            }
+            .onChange(of: focusedField) { oldValue, newValue in
+                let oldField = oldValue?.description ?? "none"
+                let newField = newValue?.description ?? "none"
+                print("🎯 [FOCUS] Focus changed from \(oldField) to \(newField)")
             }
         }
     }

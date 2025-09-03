@@ -21,6 +21,9 @@ struct ValidatedTextField: View {
                 .modifier(ValidationStyle(result: result))
                 .onSubmit(onSubmit)
                 .onChange(of: text) { oldValue, newValue in
+                    if oldValue != newValue {
+                        print("🎯 [TEXTFIELD] '\(title)' changed from '\(oldValue)' to '\(newValue)'")
+                    }
                     onChange?(newValue)
                 }
             
